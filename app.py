@@ -5,14 +5,15 @@ import subprocess
 import os
 import gzip
 
+# Banco de dados
 DB_HOST = config("DB_HOST")
 DB_PORT = config("DB_PORT")
 DB_USER = config("DB_USER")
 DB_PASSWORD = config("DB_PASSWORD")
 DB_NAME = config("DB_NAME")
 
-
-def backup_mdfmoveis():
+# Função que realiza o backup
+def gerar_backup():
     # Caminho onde o backup será armazenado
     backup_dir = Path(__file__).resolve().parent
     
@@ -31,12 +32,13 @@ def backup_mdfmoveis():
     # Execução do comando do dump
     subprocess.run(pg_dump_command, shell=True, check=True, env=env)
 
+    # Comprime o arquivo sql
     compress_backup_path = f'{backup_dir}\\{file_name}.sql.gz'
     with open(backup_path, 'rb') as original_file:
         with gzip.open(compress_backup_path, 'wb') as compress_file:
             compress_file.write(original_file.read())
-    
+            
+    # Remove o arquivo original gerado
     os.remove(backup_path)
 
-
-backup_mdfmoveis()
+gerar_backup()
